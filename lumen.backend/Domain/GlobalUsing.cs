@@ -1,0 +1,11 @@
+﻿global using Domain.Common;
+global using System.Text.RegularExpressions;
+global using Domain.Enums;
+global using System.ComponentModel.DataAnnotations;
+global using Domain.Entities;
+global using Domain.Enums;
+global using Domain.Entities;
+global using Domain.Requests;
+global using Domain.Responses;
+global using System.Linq.Expressions;
+global using System.ComponentModel;

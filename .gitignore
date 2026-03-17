@@ -1,0 +1,49 @@
+# ==========================================
+# SEGREDOS E AMBIENTE (Não subir de jeito nenhum!)
+# ==========================================
+.env
+.env.*
+!.env.example
+appsettings.Development.json
+appsettings.Local.json
+*.user
+*.suo
+secrets.json
+
+# ==========================================
+# FRONTEND (Vue + TS)
+# ==========================================
+lumen.frontend/node_modules/
+lumen.frontend/dist/
+lumen.frontend/dist-ssr/
+lumen.frontend/.local
+lumen.frontend/npm-debug.log*
+lumen.frontend/yarn-error.log*
+
+# ==========================================
+# BACKEND (.NET 9) - Global para pegar todas as camadas
+# ==========================================
+[Bb]in/
+[Ob]j/
+.vs/
+TestResults/
+
+# ==========================================
+# LOGS E TEMPORÁRIOS
+# ==========================================
+*.log
+logs/
+.DS_Store
+Thumbs.db
+
+# ==========================================
+# IDEs (Rider, VS Code, Visual Studio)
+# ==========================================
+.idea/
+*.sln.iml
+.vscode/*
+!.vscode/extensions.json
+/shelf/
+/workspace.xml
+/httpRequests/
+/dataSources/

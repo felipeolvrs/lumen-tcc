@@ -1,0 +1,17 @@
+﻿global using Application.Services;
+global using Domain.Interfaces.Repositories;
+global using Domain.Interfaces.Services;
+global using Infrastructure;
+global using Infrastructure.Repositories;
+global using Infrastructure.Repositories;
+global using Domain.Entities;
+global using Domain.Interfaces.Services;
+global using Domain.Requests;
+global using Infrastructure;
+global using Microsoft.EntityFrameworkCore;
+global using Tests.Factory;
+global using Domain.Requests;
+global using Infrastructure;
+global using Microsoft.EntityFrameworkCore;
+global using Domain.Interfaces.Services;
+global using Domain.Responses;
