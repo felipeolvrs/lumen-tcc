@@ -28,3 +28,4 @@ C:\Users\Felipe\Desktop\Projeto- Saas\lumen\lumen.backend\Infrastructure\obj\Deb
 C:\Users\Felipe\Desktop\Projeto- Saas\lumen\lumen.backend\Infrastructure\obj\Debug\net9.0\refint\Infrastructure.dll
 C:\Users\Felipe\Desktop\Projeto- Saas\lumen\lumen.backend\Infrastructure\obj\Debug\net9.0\Infrastructure.pdb
 C:\Users\Felipe\Desktop\Projeto- Saas\lumen\lumen.backend\Infrastructure\obj\Debug\net9.0\ref\Infrastructure.dll
+C:\Users\Felipe\Desktop\Projeto- Saas\lumen\lumen.backend\Infrastructure\obj\Debug\net9.0\Infrastructure.sourcelink.json

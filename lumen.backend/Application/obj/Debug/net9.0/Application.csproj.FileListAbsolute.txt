@@ -30,3 +30,4 @@ C:\Users\Felipe\Desktop\Projeto- Saas\lumen\lumen.backend\Application\obj\Debug\
 C:\Users\Felipe\Desktop\Projeto- Saas\lumen\lumen.backend\Application\obj\Debug\net9.0\Application.csproj.CoreCompileInputs.cache
 C:\Users\Felipe\Desktop\Projeto- Saas\lumen\lumen.backend\Application\obj\Debug\net9.0\Applicat.44B5EDA2.Up2Date
 C:\Users\Felipe\Desktop\Projeto- Saas\lumen\lumen.backend\Application\obj\Debug\net9.0\ref\Application.dll
+C:\Users\Felipe\Desktop\Projeto- Saas\lumen\lumen.backend\Application\obj\Debug\net9.0\Application.sourcelink.json

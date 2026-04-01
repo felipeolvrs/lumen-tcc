@@ -10,20 +10,7 @@ public class AppDbContext : DbContext
         _tenantService = tenantService;
     }
 
-    public Guid CurrentTenantId 
-    {
-        get 
-        {
-            try
-            {
-                return _tenantService?.GetCurrentTenantId() ?? Guid.Empty;
-            }
-            catch
-            {
-                return Guid.Empty;
-            }
-        }
-    }
+    public Guid CurrentTenantId => _tenantService?.GetCurrentTenantId() ?? Guid.Empty;
 
     public DbSet<Produto> Produtos { get; set; }
     public DbSet<PedidoItem> PedidoItens { get; set; }
@@ -90,7 +77,7 @@ public class AppDbContext : DbContext
         var entries = ChangeTracker.Entries<EntityBase>();
         foreach (var entry in entries)
         {
-            if (entry.State == EntityState.Added)
+            if (entry.State is EntityState.Added)
             {
                 entry.Entity.CreatedAt = DateTime.UtcNow;
                 entry.Entity.Ativo = true;

@@ -51,18 +51,14 @@ public class ColecaoService : IColecaoService
             Produtos = new List<Produto>()
         };
 
-        //TODO: Nem preciso dizer que isso precisa de refatoração, né?
-        if (dto.ProdutosIds?.Any() is true)
+        if (dto.ProdutosIds?.Any() == true)
         {
-            foreach (var prodId in dto.ProdutosIds.Distinct())
-            {
-                var produto = await _produtoRepository.GetByIdAsync(prodId);
-                
-                if (produto is not null) 
-                    colecao.Produtos.Add(produto);
-            }
+            var tarefas = dto.ProdutosIds.Distinct().Select(id => _produtoRepository.GetByIdAsync(id));
+            Produto?[] produtos = await Task.WhenAll(tarefas);
+    
+            foreach (var produto in produtos.Where(p => p is not null))
+                colecao.Produtos.Add(produto);
         }
-
         await _colecaoRepository.AddAsync(colecao);
         return MapToResponse(colecao);
     }

@@ -53,17 +53,17 @@ const fetchProfile = async () => {
     const { data } = await usuarioService.obterPerfil();
     if (data) {
       profile.value = {
-        nome: data.nome || '',
-        email: data.email || '',
-        username: (data as any).slug || data.username || '',
-        fotoUrl: (data as any).urlLogo || data.fotoUrl || '',
-        whatsapp: (data as any).whatsApp || data.whatsapp || '',
-        tipoLoja: data.tipoLoja || 'hybrid',
-        bio: data.bio || '',
-        nomeLoja: data.nomeLoja || '',
         ativo: data.ativo !== undefined ? data.ativo : true,
+        bio: data.bio || '',
+        email: data.email || '',
+        fotoUrl: (data as any).urlLogo || data.fotoUrl || '',
         instagram: data.instagram || '',
-        urlBanner: data.urlBanner || ''
+        nome: data.nome || '',
+        nomeLoja: data.nomeLoja || '',
+        tipoLoja: data.tipoLoja || 'hybrid',
+        urlBanner: data.urlBanner || '',
+        username: (data as any).slug || data.username || '',
+        whatsapp: (data as any).whatsApp || data.whatsapp || ''
       };
     }
   } catch (error) {
