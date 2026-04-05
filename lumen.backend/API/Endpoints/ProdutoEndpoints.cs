@@ -25,6 +25,24 @@ public static class ProdutoEndpoints
             var produto = await service.CriarAsync(user.GetId(), request);
             return Results.Created($"/api/produtos/{produto.Id}", produto);
         });
+        
+        group.MapPost("/{id:guid}/ativar", async (IProdutoService service, ClaimsPrincipal user, Guid id) =>
+        {
+            var sucesso = await service.UpdateStatusAsync(id, true, user.GetId());
+    
+            return sucesso 
+                ? Results.Ok(new { message = "Produto ativado com sucesso" }) 
+                : Results.Json(new { message = "Produto não encontrado ou acesso negado" }, statusCode: 403);
+        });
+        
+        group.MapPost("/{id:guid}/desativar", async (IProdutoService service, ClaimsPrincipal user, Guid id) =>
+        {
+            var sucesso = await service.UpdateStatusAsync(id, false, user.GetId());
+    
+            return sucesso 
+                ? Results.Ok(new { message = "Produto desativado com sucesso" }) 
+                : Results.Json(new { message = "Produto não encontrado ou acesso negado" }, statusCode: 403);
+        });
 
         group.MapPut("/{id:guid}", async (IProdutoService service, ClaimsPrincipal user, Guid id, ProdutoRequest request) =>
         {

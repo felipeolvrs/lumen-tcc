@@ -1,8 +1,4 @@
-﻿using Domain.Entities;
-using Domain.Requests;
-using Domain.Responses;
-using Domain.Interfaces.Repositories;
-using Domain.Interfaces.Services;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Application.Services;
 
@@ -98,6 +94,14 @@ public class ProdutoService : IProdutoService
         
         return await _produtoRepository.ListarCategoriasDoUsuarioAsync(userId);
     }
+
+    public async Task<bool> UpdateStatusAsync(Guid id, bool status, Guid tenantId)
+    {
+         await _produtoRepository.UpdateStatusAsync(id, status, tenantId);
+         
+        return true;
+    }
+    
     
     private ProdutoResponse MapToResponse(Produto produto)
     {
@@ -113,7 +117,8 @@ public class ProdutoService : IProdutoService
             LinkAfiliado = produto.LinkAfiliado,
             ReviewPessoal = produto.ReviewPessoal,
             CreatedAt = produto.CreatedAt,
-            UpdatedAt = produto.UpdatedAt
+            UpdatedAt = produto.UpdatedAt,
+            Ativo = produto.Ativo,
         };
     }
 
@@ -128,4 +133,6 @@ public class ProdutoService : IProdutoService
         produto.ReviewPessoal = dto.ReviewPessoal;
         produto.UpdatedAt = DateTime.UtcNow;
     }
+
+
 }

@@ -13,4 +13,5 @@ public interface IRepositoryBase<T>
     Task UpdateAsync(T entity, CancellationToken cancellationToken = default);
 
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task UpdateStatusAsync(Guid id, bool status, Guid tenantId, CancellationToken cancellationToken = default);
 }

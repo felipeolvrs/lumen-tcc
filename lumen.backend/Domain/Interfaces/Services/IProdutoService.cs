@@ -8,4 +8,5 @@ public interface IProdutoService
     Task<ProdutoResponse> CriarAsync(Guid userId, ProdutoRequest dto);
     Task<bool> AtualizarAsync(Guid id, Guid userId, ProdutoRequest dto);
     Task<bool> ExcluirAsync(Guid id, Guid userId);
+    Task<bool> UpdateStatusAsync(Guid id, bool status, Guid tenantId);
 }

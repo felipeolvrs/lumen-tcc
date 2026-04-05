@@ -8,6 +8,7 @@ export interface Produto {
     precoAntigo: number;
     urlImagem: string;
     categoria: string;
+    ativo: boolean;
     linkAfiliado?: string;
     plataforma?: string;
     reviewPessoal?: string;
@@ -37,6 +38,15 @@ class ProdutoService extends HttpService {
     async remover(id: string): Promise<ApiResponse<void>> {
         return await this.delete<void>(`/produtos/${id}`);
     }
+
+    async ativar(id: string) : Promise<ApiResponse<void>> {
+        return await  this.post<void>(`/produtos/${id}/ativar`,{})
+    }
+
+    async inativar(id: string) : Promise<ApiResponse<void>> {
+        return await  this.post<void>(`/produtos/${id}/desativar`, {})
+    }
+
 }
 
 export const produtoService = new ProdutoService();

@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.Repositories;
+﻿using System.Runtime.CompilerServices;
+
+namespace Infrastructure.Repositories;
 
 public class RepositoryBase<T> : IRepositoryBase<T> where T : EntityBase
 {
@@ -41,10 +43,21 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : EntityBase
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var entity = await GetByIdAsync(id, cancellationToken);
+        
         if (entity != null)
         {
             DbSet.Remove(entity);
             await Context.SaveChangesAsync(cancellationToken);
         }
+    }
+    
+    public async Task UpdateStatusAsync(Guid id, bool status, Guid tenantId, CancellationToken cancellationToken = default)
+    {
+        var rowsAffected = await DbSet
+            .Where(x => x.Id == id && x.TenantId == tenantId) 
+            .ExecuteUpdateAsync(setters => setters.SetProperty(b => b.Ativo, status), cancellationToken);
+    
+        if (rowsAffected == 0)
+            throw new Exception("Registro não encontrado ou você não tem permissão.");
     }
 }

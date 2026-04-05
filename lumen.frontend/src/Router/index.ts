@@ -11,6 +11,7 @@ import ColecaoProduto from "../Pages/ColecaoProduto.vue";
 import Perfil from "../Pages/Perfil.vue";
 import CadastroProduto from "../Pages/CadastroProduto.vue";
 import CadastrarKits from "../Pages/CadastrarKits.vue";
+import GerenciarProdutos from "../Pages/GerenciarProdutos.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -66,6 +67,12 @@ const router = createRouter({
             name: "produto.detalhes",
             component: VisualizarProduto, // Caso o lojista veja detalhes internos
             meta: { requiresAuth: true }
+        },
+        {
+          path: '/gerenciar/produtos/',
+          name: "gerenciar.produtos",
+          component: GerenciarProdutos,
+          meta: { requiresAuth: true }
         },
         {
             path: '/colecao/',

@@ -117,7 +117,7 @@ onMounted(fetchProfile);
 
 <template>
   <MobileLayoutBase :modal="modalConfig" @close-modal="modalConfig.show = false">
-    <ConfigHeader title="Configurações" />
+    <ConfigHeader title="Configurações" :show-back="false"/>
 
     <input type="file" ref="fileInput" class="hidden" accept="image/*" @change="handleFileUpload" />
 
@@ -146,6 +146,35 @@ onMounted(fetchProfile);
             v-model:chavepix="profile.chavepix"
             @open-business="isBusinessDrawerOpen = true"
         />
+
+        <div class="space-y-3 pt-4">
+          <div class="animate-in fade-in slide-in-from-bottom-3 duration-500">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-1">
+              Produtos
+            </h3>
+
+            <button
+                @click="router.push('/gerenciar/produtos/')"
+                class="w-full flex items-center justify-between p-4 bg-white border border-slate-100 rounded-3xl shadow-sm hover:border-slate-200 transition-all active:scale-[0.98] group"
+            >
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <i class="ph-bold ph-package text-xl"></i>
+                </div>
+                <div class="text-left">
+                  <p class="text-sm font-bold text-slate-900">Gerenciar Catálogo</p>
+                  <p class="text-[10px] text-slate-400 font-medium uppercase tracking-tight">Ver e editar seus produtos</p>
+                </div>
+              </div>s
+
+              <div class="w-8 h-8 flex items-center justify-center">
+                <i class="ph-bold ph-caret-right text-slate-300"></i>
+              </div>
+            </button>
+          </div>
+        </div>
+
+
 
         <SettingsAccount :email="profile.email" />
 

@@ -17,7 +17,6 @@ import { colecaoService, type ColecaoResponse } from "../Services/ColecaoService
 import { usuarioService, type UsuarioPerfil } from "../Services/UsuarioService.ts";
 
 const router = useRouter();
-
 const DEFAULT_IMAGE = "https://placehold.co/400x400/f1f5f9/94a3b8?text=Sem+Imagem";
 
 const produtos = ref<Produto[]>([]);
@@ -27,6 +26,11 @@ const isDataLoading = ref(true);
 const selectedProduct = ref<Produto | null>(null);
 const selectedColecao = ref<ColecaoResponse | null>(null);
 
+const isCartOpen = ref(false);
+const isProductOpen = ref(false);
+const isItemsColecaoOpen = ref(false);
+const isAddOpen = ref(false);
+
 const modalConfig = ref({
   show: false,
   title: '',
@@ -34,29 +38,27 @@ const modalConfig = ref({
   type: 'error' as 'success' | 'error'
 });
 
-const notificar = (title: string, message: string, type: 'success' | 'error' = 'error') => {
-  modalConfig.value = { show: true, title, message, type };
-};
-
 const processedProdutos = computed(() => {
-  return produtos.value.map(p => ({
-    ...p,
-    urlImagem: p.urlImagem || DEFAULT_IMAGE
-  }));
+  return produtos.value
+      .filter(p => p.ativo)
+      .map(p => ({
+        ...p,
+        urlImagem: p.urlImagem || DEFAULT_IMAGE
+      }));
 });
 
 const processedColecoes = computed(() => {
-  return colecoes.value.map(c => ({
-    ...c,
-    urlCapa: c.urlCapa || DEFAULT_IMAGE
-  }));
+  return colecoes.value
+      .filter(c => c.ativo)
+      .map(c => ({
+        ...c,
+        urlCapa: c.urlCapa || DEFAULT_IMAGE
+      }));
 });
 
-const fetchHomeData = async () =>
-{
+const fetchHomeData = async () => {
   isDataLoading.value = true;
-  try
-  {
+  try {
     const [prodRes, colRes, userRes] = await Promise.all([
       produtoService.listar(),
       colecaoService.listar(),
@@ -66,8 +68,7 @@ const fetchHomeData = async () =>
     if (prodRes.data) produtos.value = prodRes.data;
     if (colRes.data) colecoes.value = colRes.data;
 
-    if (userRes.data)
-    {
+    if (userRes.data) {
       userProfile.value = {
         ...userRes.data,
         username: (userRes.data as any).slug || userRes.data.username || '',
@@ -83,10 +84,10 @@ const fetchHomeData = async () =>
 
 onMounted(fetchHomeData);
 
-const isCartOpen = ref(false);
-const isProductOpen = ref(false);
-const isItemsColecaoOpen = ref(false);
-const isAddOpen = ref(false);
+const notificar = (title: string, message: string, type: 'success' | 'error' = 'error') =>
+{
+  modalConfig.value = { show: true, title, message, type };
+};
 
 const closeAllSheets = () => {
   isCartOpen.value = false;
