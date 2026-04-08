@@ -23,7 +23,9 @@ const emit = defineEmits<{
 const DEFAULT_IMAGE = "https://placehold.co/400x400/f1f5f9/94a3b8?text=Sem+Imagem";
 
 const formatPrice = (value: number | string) => {
-  if (typeof value === 'string') return value;
+  if (typeof value === 'string')
+    return value;
+
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL'

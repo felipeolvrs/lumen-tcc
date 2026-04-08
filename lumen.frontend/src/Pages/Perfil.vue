@@ -165,7 +165,7 @@ onMounted(fetchProfile);
                   <p class="text-sm font-bold text-slate-900">Gerenciar Catálogo</p>
                   <p class="text-[10px] text-slate-400 font-medium uppercase tracking-tight">Ver e editar seus produtos</p>
                 </div>
-              </div>s
+              </div>
 
               <div class="w-8 h-8 flex items-center justify-center">
                 <i class="ph-bold ph-caret-right text-slate-300"></i>

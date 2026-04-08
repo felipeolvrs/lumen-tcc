@@ -140,6 +140,7 @@ const finalizeOrder = async () => {
     notify("Erro no Pedido", "Não conseguimos processar seu pedido agora. Tente novamente.", "error");
   } finally {
     isLoading.value = false;
+    router.push(`/`);
   }
 };
 </script>

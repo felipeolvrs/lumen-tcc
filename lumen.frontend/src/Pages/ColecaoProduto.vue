@@ -49,7 +49,11 @@ const fetchInitialData = async () =>
       usuarioService.obterPerfil()
     ]);
 
-    if (resColecoes.data) colecoes.value = resColecoes.data;
+    if (resColecoes.data) {
+      colecoes.value = resColecoes.data;
+    } else if (Array.isArray(resColecoes)) {
+      colecoes.value = resColecoes;
+    }
 
     if (resUser.data)
     {
@@ -105,6 +109,11 @@ const handleCadastroColecao = () => {
 const handleCheckout = () => {
   closeAllSheets();
   router.push('/checkout');
+};
+
+const handleVerDetalhes = (id: string) => {
+  closeAllSheets();
+  router.push(`/produto/detalhes/${id}`);
 };
 
 const abrirKit = (colecao: ColecaoResponse) => {
@@ -224,7 +233,11 @@ const abrirKit = (colecao: ColecaoResponse) => {
     </ButtonSheetBase>
 
     <ButtonSheetBase :is-open="isItemsColecaoOpen" @close="isItemsColecaoOpen = false">
-      <DrawerKit :colecao="selectedColecao" @close-drawer="isItemsColecaoOpen = false" />
+      <DrawerKit
+          :colecao="selectedColecao"
+          @close-drawer="isItemsColecaoOpen = false"
+          @ver-detalhes="handleVerDetalhes"
+      />
     </ButtonSheetBase>
 
   </MobileLayoutBase>

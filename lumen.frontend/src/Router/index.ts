@@ -65,7 +65,7 @@ const router = createRouter({
         {
             path: '/produto/detalhes/:id',
             name: "produto.detalhes",
-            component: VisualizarProduto, // Caso o lojista veja detalhes internos
+            component: VisualizarProduto,
             meta: { requiresAuth: true }
         },
         {

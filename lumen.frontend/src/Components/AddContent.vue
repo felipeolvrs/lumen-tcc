@@ -52,7 +52,6 @@ const props = withDefaults(defineProps<AddContentProps>(), {
         </ActionCard>
       </div>
 
-
     </div>
   </div>
 </template>

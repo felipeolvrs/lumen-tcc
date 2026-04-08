@@ -49,7 +49,6 @@ const processedProdutos = computed(() => {
 
 const processedColecoes = computed(() => {
   return colecoes.value
-      .filter(c => c.ativo)
       .map(c => ({
         ...c,
         urlCapa: c.urlCapa || DEFAULT_IMAGE

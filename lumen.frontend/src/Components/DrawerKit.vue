@@ -18,7 +18,6 @@ const router = useRouter();
 const cart = useCartStore();
 const isSuccess = ref(false);
 
-// Imagem padrão para fallbacks
 const DEFAULT_IMAGE = "https://placehold.co/400x400/f1f5f9/94a3b8?text=Sem+Foto";
 
 const formatPrice = (value: number) => {
@@ -50,7 +49,6 @@ const handleEditColecao = () => {
 
 <template>
   <div v-if="colecao" class="relative bg-white rounded-t-2xl overflow-hidden">
-
     <div class="absolute right-5 top-5 flex gap-2 z-20">
       <button
           @click.stop="handleEditColecao"
@@ -100,7 +98,8 @@ const handleEditColecao = () => {
           <div
               v-for="produto in colecao.produtos"
               :key="produto.id"
-              class="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-2xl shadow-sm"
+              @click="emit('ver-detalhes', produto.id!)"
+              class="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-2xl shadow-sm cursor-pointer active:scale-[0.98] transition-all"
           >
             <div class="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 shadow-inner">
               <img :src="produto.urlImagem || DEFAULT_IMAGE" :alt="produto.nome" class="w-full h-full object-cover" />
@@ -110,8 +109,7 @@ const handleEditColecao = () => {
               <p class="text-xs font-bold text-slate-500">{{ formatPrice(produto.preco) }}</p>
             </div>
             <button
-                @click.stop="emit('ver-detalhes', produto.id!)"
-                class="p-2.5 bg-slate-100 text-slate-500 rounded-full active:scale-90 transition-all shadow-sm"
+                class="p-2.5 bg-slate-100 text-slate-500 rounded-full shadow-sm"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
                 <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
