@@ -21,11 +21,10 @@ public class AppDbContext : DbContext
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
-        configurationBuilder.Properties<string>().HaveMaxLength(100);
-        configurationBuilder.Properties<decimal>().HavePrecision(10, 2);
+        configurationBuilder.Properties<string>().HaveMaxLength(255);
+        configurationBuilder.Properties<decimal>().HavePrecision(18, 2);
         configurationBuilder.Properties<Guid>().HaveColumnType("char(36)");
     }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

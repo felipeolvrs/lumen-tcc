@@ -1,3 +1,13 @@
+# Pastas de compilação do .NET
+**/bin/
+**/obj/
+
+# Arquivos do Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+
 # ==========================================
 # SEGREDOS E AMBIENTE (Não subir de jeito nenhum!)
 # ==========================================

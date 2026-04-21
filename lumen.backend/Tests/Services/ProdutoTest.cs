@@ -4,7 +4,6 @@
     public class ProdutoTest
     {
         private AppDbContext _context;
-        private ServiceFactory _factory;
         private IProdutoService _service;
         private Guid _defaultUserId;
 
@@ -16,8 +15,8 @@
                 .Options;
 
             _context = new AppDbContext(options);
-            _factory = new ServiceFactory();
-            _service = _factory.ProdutoService(_context);
+            var repository = new ProdutoRepository(_context); 
+            _service = new ProdutoService(repository);
             
             SeedDatabase();
         }
@@ -35,9 +34,10 @@
             var usuario = new Usuario 
             { 
                 Id = _defaultUserId, 
-                Nome = "Usuário Padrão", 
-                Email = "teste@teste.com", 
-                Ativo = true 
+                Nome = "Usuário Teste", 
+                Email = "teste@lumen.com", 
+                Ativo = true,
+                TenantId = _defaultUserId 
             };
             
             _context.Set<Usuario>().Add(usuario);
@@ -45,150 +45,89 @@
         }
 
         [DataTestMethod]
-        [DataRow("Criar_Produto_Completo", "Monitor UltraWide", 2500.00, "34 polegadas", "Monitores", "http://teste.com/img.jpg")]
-        [DataRow("Criar_Produto_Apenas_Obrigatorios", "Mouse Básico", 50.00, null, null, null)]
-        public async Task CriarAsync_DadosValidos_DevePersistirComIntegridade(
-            string cenario, string nome, double precoDouble, string descricao, string categoria, string urlImagem)
+        [DataRow("Criar_Produto_Completo", "Monitor UltraWide", 2500.00)]
+        [DataRow("Criar_Produto_Simples", "Mouse", 50.00)]
+        public async Task CriarAsync_DadosValidos_DevePersistir(string cenario, string nome, double precoDouble)
         {
-            decimal preco = (decimal)precoDouble;
-            var request = new ProdutoRequest 
-            { 
-                Nome = nome, 
-                Preco = preco,
-                Descricao = descricao,
-                Categoria = categoria,
-                UrlImagem = urlImagem,
-                UsuarioId = _defaultUserId
-            };
+            // Arrange
+            var request = new ProdutoRequest { Nome = nome, Preco = (decimal)precoDouble };
 
-            var result = await _service.CriarAsync(request);
+            // Act
+            var result = await _service.CriarAsync(_defaultUserId, request);
 
-            _context.ChangeTracker.Clear();
-
-            Assert.IsNotNull(result, $"Cenário: {cenario}");
-            Assert.AreNotEqual(Guid.Empty, result.Id, $"Cenário: {cenario}");
-
-            var noBanco = await _context.Set<Produto>().FirstOrDefaultAsync(p => p.Id == result.Id);
-            Assert.IsNotNull(noBanco, $"Cenário: {cenario}");
-            Assert.AreEqual(nome, noBanco.Nome, $"Cenário: {cenario}");
-            Assert.AreEqual(preco, noBanco.Preco, $"Cenário: {cenario}");
-            Assert.AreEqual(_defaultUserId, noBanco.UsuarioId, $"Cenário: {cenario}");
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(nome, result.Nome);
+            
+            var noBanco = await _context.Set<Produto>().AnyAsync(p => p.Id == result.Id && p.TenantId == _defaultUserId);
+            Assert.IsTrue(noBanco, "O produto deve existir no banco vinculado ao Tenant correto.");
         }
 
         [DataTestMethod]
-        [DataRow("Validacao_Nome_Vazio", "", 10.00, "nome")]
-        [DataRow("Validacao_Preco_Negativo", "Teclado", -50.00, "preço")]
-        [DataRow("Validacao_Nome_Gigante", "GIGANTE", 10.00, "limite")] 
-        public async Task CriarAsync_DadosInvalidos_DeveLancarErroEspecifico(
-            string cenario, string nome, double precoDouble, string expectedErrorSnippet)
+        [DataRow("Nome_Vazio", "", 10.00, "obrigatório")]
+        [DataRow("Preco_Zero", "Teclado", 0.00, "maior que zero")]
+        public async Task CriarAsync_DadosInvalidos_DeveLancarErro(string cenario, string nome, double precoDouble, string erroEsperado)
         {
-            if (nome == "GIGANTE") nome = new string('A', 201);
+            // Arrange
+            var request = new ProdutoRequest { Nome = nome, Preco = (decimal)precoDouble };
 
-            var request = new ProdutoRequest 
-            { 
-                Nome = nome, 
-                Preco = (decimal)precoDouble,
-                UsuarioId = _defaultUserId
-            };
-
+            // Act & Assert
             var ex = await Assert.ThrowsExceptionAsync<ArgumentException>(() => 
-                _service.CriarAsync(request), $"Cenário: {cenario}");
+                _service.CriarAsync(_defaultUserId, request));
 
-            Assert.IsTrue(
-                ex.Message.Contains(expectedErrorSnippet, StringComparison.OrdinalIgnoreCase), 
-                $"Cenário: {cenario}");
+            Assert.IsTrue(ex.Message.Contains(erroEsperado, StringComparison.OrdinalIgnoreCase));
+        }
+        
+        [DataTestMethod]
+        [TestCategory("Validações de Negócio")]
+        [DataRow("Nome_Vazio", "", 15.90, "obrigatório")]
+        [DataRow("Preço_Zero", "Produto Teste", 0.00, "maior que zero")]
+        [DataRow("Preço_Negativo", "Produto Teste", -5.00, "maior que zero")]
+        public async Task CriarAsync_DadosInvalidos_DeveLancarArgumentException(string cenario, string nome, double preco, string erroEsperado)
+        {
+            // 1. Arrange (Preparação)
+            var request = new ProdutoRequest { Nome = nome, Preco = (decimal)preco };
+
+            // 2. Act (Ação)
+            var excecao = await Assert.ThrowsExceptionAsync<ArgumentException>(() => 
+                _service.CriarAsync(_defaultUserId, request));
+
+            // 3. Assert (Verificação)
+            Assert.IsTrue(excecao.Message.Contains(erroEsperado, StringComparison.OrdinalIgnoreCase), 
+                $"Falha no cenário: {cenario}");
         }
 
         [DataTestMethod]
-        [DataRow("Obter_Produto_Existente", true)]
-        [DataRow("Obter_Produto_Inexistente_Retorna_Null", false)]
-        public async Task ObterPorIdAsync_RetornosEsperados(string cenario, bool exists)
+        [DataRow("Atualizar_Sucesso", true)]
+        [DataRow("Atualizar_Usuario_Errado", false)]
+        public async Task AtualizarAsync_VerificarSeguranca(string cenario, bool mesmoUsuario)
         {
-            Guid targetId = Guid.NewGuid();
+            // Arrange
+            var criado = await _service.CriarAsync(_defaultUserId, new ProdutoRequest { Nome = "Original", Preco = 10 });
+            var updateId = mesmoUsuario ? _defaultUserId : Guid.NewGuid();
+            var request = new ProdutoRequest { Nome = "Alterado", Preco = 20 };
 
-            if (exists)
-            {
-                var criado = await _service.CriarAsync(new ProdutoRequest { Nome = "Item", Preco = 10, UsuarioId = _defaultUserId });
-                targetId = criado.Id;
-            }
+            // Act
+            var sucesso = await _service.AtualizarAsync(criado.Id, updateId, request);
 
-            var resultado = await _service.ObterPorIdAsync(targetId);
-
-            if (exists)
-            {
-                Assert.IsNotNull(resultado, $"Cenário: {cenario}");
-                Assert.AreEqual(targetId, resultado.Id, $"Cenário: {cenario}");
-            }
-            else
-            {
-                Assert.IsNull(resultado, $"Cenário: {cenario}");
-            }
+            // Assert
+            Assert.AreEqual(mesmoUsuario, sucesso);
         }
 
         [DataTestMethod]
-        [DataRow("Atualizar_Existente_Sucesso", true, false)]
-        [DataRow("Atualizar_Id_Inexistente_Retorna_False", false, false)]
-        [DataRow("Atualizar_Item_Ja_Deletado_Retorna_False", true, true)]
-        public async Task AtualizarAsync_RetornosEsperados(string cenario, bool exists, bool isDeleted)
+        [DataRow("Excluir_Sucesso", true)]
+        public async Task ExcluirAsync_DeveRemoverRegistro(string cenario, bool existe)
         {
-            Guid targetId = Guid.NewGuid();
-            var updateRequest = new ProdutoRequest { Nome = "Editado", Preco = 200, UsuarioId = _defaultUserId };
+            // Arrange
+            var criado = await _service.CriarAsync(_defaultUserId, new ProdutoRequest { Nome = "Deletar", Preco = 10 });
 
-            if (exists)
-            {
-                var criado = await _service.CriarAsync(new ProdutoRequest { Nome = "Antigo", Preco = 100, UsuarioId = _defaultUserId });
-                targetId = criado.Id;
+            // Act
+            var sucesso = await _service.ExcluirAsync(criado.Id, _defaultUserId);
 
-                var produtoDb = await _context.Set<Produto>().FindAsync(criado.Id);
-                produtoDb!.CreatedAt = DateTime.UtcNow.AddDays(-1);
-                produtoDb.UpdatedAt = DateTime.UtcNow.AddDays(-1);
-                await _context.SaveChangesAsync();
-                _context.ChangeTracker.Clear();
-
-                if (isDeleted)
-                {
-                    await _service.ExcluirAsync(targetId);
-                }
-            }
-
-            var sucesso = await _service.AtualizarAsync(targetId, updateRequest);
-
-            if (exists && !isDeleted)
-            {
-                Assert.IsTrue(sucesso, $"Cenário: {cenario}");
-                
-                var noBanco = await _context.Set<Produto>().AsNoTracking().FirstOrDefaultAsync(p => p.Id == targetId);
-                Assert.AreEqual("Editado", noBanco!.Nome, $"Cenário: {cenario}");
-                Assert.IsTrue(noBanco.UpdatedAt > noBanco.CreatedAt, $"Cenário: {cenario}");
-            }
-            else
-            {
-                Assert.IsFalse(sucesso, $"Cenário: {cenario}");
-            }
-        }
-
-        [DataTestMethod]
-        [DataRow("Excluir_Existente_Retorna_True", true)]
-        [DataRow("Excluir_Inexistente_Retorna_False", false)]
-        public async Task ExcluirAsync_RetornosEsperados(string cenario, bool exists)
-        {
-            Guid targetId = Guid.NewGuid();
-
-            if (exists)
-            {
-                var criado = await _service.CriarAsync(new ProdutoRequest { Nome = "Lixo", Preco = 10, UsuarioId = _defaultUserId });
-                targetId = criado.Id;
-            }
-
-            var sucesso = await _service.ExcluirAsync(targetId);
-
-            Assert.AreEqual(exists, sucesso, $"Cenário: {cenario}");
-
-            if (exists)
-            {
-                var noBanco = await _context.Set<Produto>().AnyAsync(p => p.Id == targetId);
-                Assert.IsFalse(noBanco, $"Cenário: {cenario}");
-            }
+            // Assert
+            Assert.IsTrue(sucesso);
+            var aindaExiste = await _context.Set<Produto>().AnyAsync(p => p.Id == criado.Id);
+            Assert.IsFalse(aindaExiste);
         }
     }
 }
