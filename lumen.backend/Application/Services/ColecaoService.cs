@@ -1,5 +1,4 @@
-﻿
-using Infrastructure.Repositories;
+﻿using Infrastructure.Repositories;
 
 namespace Application.Services;
 
@@ -12,11 +11,6 @@ public class ColecaoService : IColecaoService
     {
         _colecaoRepository = colecaoRepository;
         _produtoRepository = produtoRepository;
-    }
-
-    public ColecaoService(ColecaoRepository colecaoRepository)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<List<ColecaoResponse>> ObterPorUsuarioAsync(Guid userId)
@@ -53,12 +47,16 @@ public class ColecaoService : IColecaoService
 
         if (dto.ProdutosIds?.Any() == true)
         {
-            var tarefas = dto.ProdutosIds.Distinct().Select(id => _produtoRepository.GetByIdAsync(id));
-            Produto?[] produtos = await Task.WhenAll(tarefas);
-    
-            foreach (var produto in produtos.Where(p => p is not null))
-                colecao.Produtos.Add(produto);
+            foreach (var produtoId in dto.ProdutosIds.Distinct())
+            {
+                var produto = await _produtoRepository.GetByIdAsync(produtoId);
+                if (produto != null)
+                {
+                    colecao.Produtos.Add(produto);
+                }
+            }
         }
+
         await _colecaoRepository.AddAsync(colecao);
         return MapToResponse(colecao);
     }
@@ -79,21 +77,19 @@ public class ColecaoService : IColecaoService
         colecao.Publica = dto.Publica;
         colecao.UpdatedAt = DateTime.UtcNow;
 
-        List<Guid> novosIds = dto.ProdutosIds?.Distinct().ToList() ?? new List<Guid>();
+        var novosIds = dto.ProdutosIds?.Distinct().ToList() ?? new List<Guid>();
         
-        List<Produto> paraRemover = colecao.Produtos.Where(p => !novosIds.Contains(p.Id)).ToList();
-        
+        var paraRemover = colecao.Produtos.Where(p => !novosIds.Contains(p.Id)).ToList();
         foreach (var p in paraRemover) 
             colecao.Produtos.Remove(p);
 
-        List<Guid> atuaisIds = colecao.Produtos.Select(p => p.Id).ToList();
-        IEnumerable<Guid> paraAdicionarIds = novosIds.Except(atuaisIds);
+        var atuaisIds = colecao.Produtos.Select(p => p.Id).ToList();
+        var paraAdicionarIds = novosIds.Except(atuaisIds).ToList();
 
         foreach (var prodId in paraAdicionarIds)
         {
             var produto = await _produtoRepository.GetByIdAsync(prodId);
-            
-            if (produto is not null) 
+            if (produto != null) 
                 colecao.Produtos.Add(produto);
         }
 
@@ -128,7 +124,7 @@ public class ColecaoService : IColecaoService
                 Nome = p.Nome, 
                 Preco = p.Preco,
                 UrlImagem = p.UrlImagem 
-            }).ToList() ?? new()
+            }).ToList() ?? new List<ProdutoSimplificadoResponse>()
         };
     }
 }

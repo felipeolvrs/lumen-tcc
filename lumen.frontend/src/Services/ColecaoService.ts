@@ -17,27 +17,27 @@ export interface AtualizarColecaoRequest {
     publica?: boolean;
 }
 
-    export interface ColecaoResponse {
-        id: string;
-        nome: string;
-        descricao: string;
-        urlCapa: string;
-        produtos: Produto[];
-    }
+export interface ColecaoResponse {
+    id: string;
+    nome: string;
+    descricao: string;
+    urlCapa: string;
+    produtos: Produto[];
+}
 
-    class ColecaoService extends HttpService {
-        constructor() {
-            const url = import.meta.env.VITE_API_URL;
-            super(url);
-        }
+class ColecaoService extends HttpService {
+    constructor() {
+        const url = import.meta.env.VITE_API_URL;
+        super(url);
+    }
 
     async listar(): Promise<ApiResponse<ColecaoResponse[]>> {
         return await this.get<ColecaoResponse[]>('/colecoes');
     }
 
-        async obterPorId(id: string): Promise<ApiResponse<ColecaoResponse>> {
-            return await this.get<ColecaoResponse>(`/colecoes/${id}`);
-        }
+    async obterPorId(id: string): Promise<ApiResponse<ColecaoResponse>> {
+        return await this.get<ColecaoResponse>(`/colecoes/${id}`);
+    }
 
     async criar(dto: CriarColecaoRequest): Promise<ApiResponse<ColecaoResponse>> {
         return await this.post<ColecaoResponse>('/colecoes', dto);

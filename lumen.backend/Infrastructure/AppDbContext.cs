@@ -25,6 +25,7 @@ public class AppDbContext : DbContext
         configurationBuilder.Properties<decimal>().HavePrecision(18, 2);
         configurationBuilder.Properties<Guid>().HaveColumnType("char(36)");
     }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -46,8 +47,16 @@ public class AppDbContext : DbContext
             builder.Property(p => p.ReviewPessoal).HasMaxLength(1000);
             builder.Property(p => p.UrlImagem).HasColumnType("longtext");
             
-            builder.HasOne(p => p.Usuario).WithMany(u => u.Produtos).HasForeignKey(p => p.TenantId);
-            builder.HasOne(p => p.Colecao).WithMany(c => c.Produtos).HasForeignKey(p => p.ColecaoId);
+            builder.HasOne(p => p.Usuario)
+                   .WithMany(u => u.Produtos)
+                   .HasForeignKey(p => p.UsuarioId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(p => p.Colecao)
+                   .WithMany(c => c.Produtos)
+                   .HasForeignKey(p => p.ColecaoId)
+                   .OnDelete(DeleteBehavior.SetNull);
+
             builder.HasQueryFilter(p => p.TenantId == CurrentTenantId);
         });
 
@@ -56,6 +65,11 @@ public class AppDbContext : DbContext
             builder.Property(c => c.Descricao).HasMaxLength(1000);
             builder.Property(c => c.UrlCapa).HasColumnType("longtext");
             
+            builder.HasOne(c => c.Usuario)
+                   .WithMany()
+                   .HasForeignKey(c => c.UsuarioId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
             builder.HasQueryFilter(c => c.TenantId == CurrentTenantId);
         });
 

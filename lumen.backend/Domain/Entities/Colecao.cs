@@ -8,5 +8,7 @@ public class Colecao : EntityBase
 
     public bool Publica { get; set; } = false;
     public Guid UsuarioId { get; set; }
+
+    public Usuario Usuario { get; set; }
     public ICollection<Produto> Produtos { get; set; } = new List<Produto>();
 }
